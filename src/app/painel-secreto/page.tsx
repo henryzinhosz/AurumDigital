@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from 'react';
@@ -77,11 +78,11 @@ export default function AdminPage() {
     setIsLoggingIn(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      toast({ title: 'Bem-vindo', description: 'Acesso autorizado.' });
+      toast({ title: 'Acesso concedido', description: 'Bem-vindo ao painel administrativo.' });
     } catch (error: any) {
       toast({ 
-        title: 'Erro de Acesso', 
-        description: 'E-mail ou senha inválidos.', 
+        title: 'Erro de Autenticação', 
+        description: 'E-mail ou senha incorretos. Verifique no Console do Firebase.', 
         variant: 'destructive' 
       });
     } finally {
@@ -102,16 +103,16 @@ export default function AdminPage() {
     if (product) {
       setEditingProduct(product);
       setFormData({
-        name: product.name,
-        description: product.description,
-        imageUrl: product.imageUrl,
-        price: product.price,
+        name: product.name || '',
+        description: product.description || '',
+        imageUrl: product.imageUrl || '',
+        price: product.price || 0,
         promoPrice: product.promoPrice || 0,
-        categoryId: product.categoryId,
-        isMainCover: product.isMainCover,
-        isHero: product.isHero,
-        isPromo: product.isPromo,
-        hidePrice: product.hidePrice,
+        categoryId: product.categoryId || '',
+        isMainCover: !!product.isMainCover,
+        isHero: !!product.isHero,
+        isPromo: !!product.isPromo,
+        hidePrice: !!product.hidePrice,
         material: product.material || '',
         style: product.style || ''
       });
@@ -128,23 +129,23 @@ export default function AdminPage() {
 
   const handleSaveProduct = () => {
     if (!formData.name || !formData.categoryId) {
-      toast({ title: 'Erro', description: 'Preencha os campos obrigatórios.', variant: 'destructive' });
+      toast({ title: 'Campo Obrigatório', description: 'Nome e Categoria são necessários.', variant: 'destructive' });
       return;
     }
 
     if (editingProduct) {
       updateProduct(editingProduct.id, formData);
-      toast({ title: 'Sucesso', description: 'Produto atualizado.' });
+      toast({ title: 'Atualizado', description: 'Produto salvo com sucesso.' });
     } else {
       addProduct(formData);
-      toast({ title: 'Sucesso', description: 'Produto criado.' });
+      toast({ title: 'Criado', description: 'Novo produto adicionado ao catálogo.' });
     }
     setIsProductDialogOpen(false);
   };
 
   const handleAiDescription = async () => {
     if (!formData.material || !formData.style) {
-      toast({ title: 'Atenção', description: 'Preencha o material e o estilo para usar o IA.', variant: 'destructive' });
+      toast({ title: 'Faltam detalhes', description: 'Material e Estilo ajudam a IA a escrever melhor.', variant: 'destructive' });
       return;
     }
     setIsGenerating(true);
@@ -154,9 +155,9 @@ export default function AdminPage() {
         style: formData.style
       });
       setFormData({ ...formData, description: res.description });
-      toast({ title: 'IA Concluída', description: 'Descrição gerada com sucesso.' });
+      toast({ title: 'IA Finalizada', description: 'Descrição elegante gerada.' });
     } catch (e) {
-      toast({ title: 'Erro IA', description: 'Não foi possível gerar a descrição.', variant: 'destructive' });
+      toast({ title: 'Erro na IA', description: 'Não foi possível conectar ao serviço de geração.', variant: 'destructive' });
     } finally {
       setIsGenerating(false);
     }
@@ -166,7 +167,7 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <p className="font-headline tracking-widest text-primary uppercase">Aurum Admin</p>
+        <p className="font-headline tracking-widest text-primary uppercase">Carregando Painel...</p>
       </div>
     );
   }
@@ -176,8 +177,8 @@ export default function AdminPage() {
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md shadow-xl border-primary/20">
           <CardHeader className="text-center">
-            <CardTitle className="font-headline text-3xl text-primary">Acesso Restrito</CardTitle>
-            <p className="text-xs uppercase tracking-widest opacity-60">Painel Administrativo Aurum</p>
+            <CardTitle className="font-headline text-3xl text-primary">Login Administrativo</CardTitle>
+            <p className="text-xs uppercase tracking-widest opacity-60">Aurum Digital Studio</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
@@ -186,7 +187,7 @@ export default function AdminPage() {
                 <Input 
                   id="email" 
                   type="email" 
-                  placeholder="admin@aurum.com.br"
+                  placeholder="seu-email@exemplo.com"
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)}
                   className="rounded-none border-primary/20 focus:border-primary"
@@ -206,10 +207,10 @@ export default function AdminPage() {
               </div>
               <Button 
                 type="submit" 
-                className="w-full bg-primary hover:bg-secondary"
+                className="w-full bg-primary hover:bg-secondary transition-colors"
                 disabled={isLoggingIn}
               >
-                {isLoggingIn ? 'Entrando...' : 'Entrar'}
+                {isLoggingIn ? 'Verificando...' : 'Entrar no Painel'}
               </Button>
             </form>
           </CardContent>
@@ -225,11 +226,11 @@ export default function AdminPage() {
           <Link href="/" className="text-primary hover:text-secondary transition-colors">
             <ChevronLeft className="w-5 h-5" />
           </Link>
-          <h1 className="font-headline text-xl text-primary">Aurum Admin</h1>
+          <h1 className="font-headline text-xl text-primary">Gestão Aurum</h1>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-xs text-muted-foreground hidden sm:block">{user.email}</span>
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-destructive">
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-destructive hover:bg-destructive/10">
             <LogOut className="w-4 h-4 mr-2" /> Sair
           </Button>
         </div>
@@ -245,49 +246,61 @@ export default function AdminPage() {
           <TabsContent value="products">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Gerenciamento de Produtos</CardTitle>
+                <CardTitle className="text-lg">Catálogo de Joias</CardTitle>
                 <Button onClick={() => handleOpenProductDialog()} className="bg-primary hover:bg-secondary">
-                  <Plus className="w-4 h-4 mr-2" /> Novo Produto
+                  <Plus className="w-4 h-4 mr-2" /> Adicionar Peça
                 </Button>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Foto</TableHead>
+                      <TableHead>Preview</TableHead>
                       <TableHead>Nome</TableHead>
                       <TableHead>Categoria</TableHead>
                       <TableHead>Preço</TableHead>
-                      <TableHead>Destaques</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {products.map((p) => (
-                      <TableRow key={p.id}>
-                        <TableCell>
-                          <div className="w-10 h-10 rounded bg-muted overflow-hidden">
-                            <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium">{p.name}</TableCell>
-                        <TableCell>{categories.find(c => c.id === p.categoryId)?.name}</TableCell>
-                        <TableCell>
-                          {p.hidePrice ? 'Oculto' : `R$ ${p.isPromo ? p.promoPrice : p.price}`}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1">
-                            {p.isHero && <span className="bg-blue-100 text-blue-700 text-[10px] px-1 rounded">Hero</span>}
-                            {p.isMainCover && <span className="bg-green-100 text-green-700 text-[10px] px-1 rounded">Capa</span>}
-                            {p.isPromo && <span className="bg-rose-100 text-rose-700 text-[10px] px-1 rounded">Promo</span>}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => handleOpenProductDialog(p)}><Edit className="w-4 h-4" /></Button>
-                          <Button variant="ghost" size="icon" onClick={() => deleteProduct(p.id)} className="text-destructive"><Trash className="w-4 h-4" /></Button>
+                    {products.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                          Nenhum produto cadastrado. Comece adicionando um novo!
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      products.map((p) => (
+                        <TableRow key={p.id}>
+                          <TableCell>
+                            <div className="w-12 h-12 rounded bg-muted overflow-hidden border">
+                              {p.imageUrl ? (
+                                <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-[8px] uppercase">Sem foto</div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-medium">{p.name}</TableCell>
+                          <TableCell>{categories.find(c => c.id === p.categoryId)?.name || 'Sem Categoria'}</TableCell>
+                          <TableCell>
+                            {p.hidePrice ? 'Sob Consulta' : `R$ ${p.isPromo ? p.promoPrice : p.price}`}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {p.isHero && <span className="bg-blue-50 text-blue-600 text-[9px] px-2 py-0.5 rounded-full border border-blue-100 uppercase font-bold tracking-tighter">Topo</span>}
+                              {p.isMainCover && <span className="bg-green-50 text-green-600 text-[9px] px-2 py-0.5 rounded-full border border-green-100 uppercase font-bold tracking-tighter">Capa</span>}
+                              {p.isPromo && <span className="bg-rose-50 text-rose-600 text-[9px] px-2 py-0.5 rounded-full border border-rose-100 uppercase font-bold tracking-tighter">Promo</span>}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="icon" onClick={() => handleOpenProductDialog(p)} className="hover:text-primary"><Edit className="w-4 h-4" /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => deleteProduct(p.id)} className="text-destructive hover:bg-destructive/10"><Trash className="w-4 h-4" /></Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -297,19 +310,21 @@ export default function AdminPage() {
           <TabsContent value="categories">
             <Card className="max-w-xl">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Categorias</CardTitle>
+                <CardTitle className="text-lg">Categorias de Joias</CardTitle>
                 <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm"><Plus className="w-4 h-4 mr-2" /> Nova Categoria</Button>
                   </DialogTrigger>
                   <DialogContent>
-                    <DialogHeader><DialogTitle>Nova Categoria</DialogTitle></DialogHeader>
-                    <div className="py-4">
-                      <Label>Nome da Categoria</Label>
-                      <Input value={newCatName} onChange={(e) => setNewCatName(e.target.value)} />
+                    <DialogHeader><DialogTitle>Adicionar Categoria</DialogTitle></DialogHeader>
+                    <div className="py-4 space-y-4">
+                      <div className="space-y-2">
+                        <Label>Nome (ex: Colares, Brincos, Anéis)</Label>
+                        <Input value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Digite o nome..." />
+                      </div>
                     </div>
                     <DialogFooter>
-                      <Button onClick={() => { addCategory(newCatName); setNewCatName(''); setIsCategoryDialogOpen(false); }}>Salvar</Button>
+                      <Button onClick={() => { if(newCatName) { addCategory(newCatName); setNewCatName(''); setIsCategoryDialogOpen(false); } }} className="bg-primary">Salvar Categoria</Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
@@ -323,14 +338,20 @@ export default function AdminPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {categories.map((c) => (
-                      <TableRow key={c.id}>
-                        <TableCell>{c.name}</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => deleteCategory(c.id)} className="text-destructive"><Trash className="w-4 h-4" /></Button>
-                        </TableCell>
+                    {categories.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={2} className="text-center py-8 text-muted-foreground">Crie categorias para organizar seus produtos.</TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      categories.map((c) => (
+                        <TableRow key={c.id}>
+                          <TableCell className="font-medium">{c.name}</TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="icon" onClick={() => deleteCategory(c.id)} className="text-destructive hover:bg-destructive/10"><Trash className="w-4 h-4" /></Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -341,17 +362,17 @@ export default function AdminPage() {
 
       {/* Product Form Dialog */}
       <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingProduct ? 'Editar Produto' : 'Novo Produto'}</DialogTitle>
+            <DialogTitle className="font-headline text-2xl">{editingProduct ? 'Editar Peça' : 'Nova Peça no Acervo'}</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
             <div className="space-y-4">
-              <div>
+              <div className="space-y-2">
                 <Label>Nome do Produto*</Label>
-                <Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                <Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Ex: Colar Infinito" />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label>Categoria*</Label>
                 <Select value={formData.categoryId} onValueChange={(val) => setFormData({...formData, categoryId: val})}>
                   <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
@@ -360,81 +381,84 @@ export default function AdminPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label>URL da Foto</Label>
-                <Input value={formData.imageUrl} onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} />
+              <div className="space-y-2">
+                <Label>URL da Imagem</Label>
+                <Input value={formData.imageUrl} onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} placeholder="https://..." />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div>
+                <div className="space-y-2">
                   <Label>Preço Base (R$)</Label>
                   <Input type="number" value={formData.price} onChange={(e) => setFormData({...formData, price: Number(e.target.value)})} />
                 </div>
                 {formData.isPromo && (
-                  <div>
-                    <Label>Preço Promo (R$)</Label>
-                    <Input type="number" value={formData.promoPrice} onChange={(e) => setFormData({...formData, promoPrice: Number(e.target.value)})} />
+                  <div className="space-y-2 text-secondary">
+                    <Label>Preço Oferta (R$)</Label>
+                    <Input type="number" value={formData.promoPrice} onChange={(e) => setFormData({...formData, promoPrice: Number(e.target.value)})} className="border-secondary/40" />
                   </div>
                 )}
               </div>
-              <div className="space-y-3 pt-2">
-                <div className="flex items-center space-x-2">
+              <div className="space-y-3 pt-4 border-t">
+                <Label className="text-[10px] uppercase opacity-60">Visibilidade e Destaques</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="hero" className="text-xs">Destaque no Banner Topo</Label>
                   <Checkbox id="hero" checked={formData.isHero} onCheckedChange={(val) => setFormData({...formData, isHero: !!val})} />
-                  <Label htmlFor="hero">Exibir no Carrossel (Destaque Topo)</Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="cover" className="text-xs">Exibir na Home (Favoritos)</Label>
                   <Checkbox id="cover" checked={formData.isMainCover} onCheckedChange={(val) => setFormData({...formData, isMainCover: !!val})} />
-                  <Label htmlFor="cover">Exibir na Capa Principal</Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="promo" className="text-xs">Ativar Modo Promoção</Label>
                   <Checkbox id="promo" checked={formData.isPromo} onCheckedChange={(val) => setFormData({...formData, isPromo: !!val})} />
-                  <Label htmlFor="promo">Modo Promoção (Preço antigo/novo)</Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="hide" className="text-xs">Ocultar Preço (Consultar)</Label>
                   <Checkbox id="hide" checked={formData.hidePrice} onCheckedChange={(val) => setFormData({...formData, hidePrice: !!val})} />
-                  <Label htmlFor="hide">Exibir sem Preço (Consultar)</Label>
                 </div>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 bg-primary/5 rounded-lg border border-primary/10">
-                <div className="flex items-center justify-between mb-3">
-                  <Label className="text-primary font-bold">Assistente de IA</Label>
-                  <Sparkles className="w-4 h-4 text-primary" />
+              <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 shadow-inner">
+                <div className="flex items-center justify-between mb-4">
+                  <Label className="text-primary font-bold flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" /> Escrita Criativa IA
+                  </Label>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <Label className="text-[10px] uppercase">Material</Label>
-                    <Input placeholder="Ex: Ouro 18k, Pérolas" value={formData.material} onChange={(e) => setFormData({...formData, material: e.target.value})} className="h-8 text-sm" />
+                    <Label className="text-[10px] uppercase font-bold opacity-70">Material da Peça</Label>
+                    <Input placeholder="Ex: Banhado a Ouro 18k, Cristais" value={formData.material} onChange={(e) => setFormData({...formData, material: e.target.value})} className="h-9 text-sm" />
                   </div>
                   <div>
-                    <Label className="text-[10px] uppercase">Estilo</Label>
-                    <Input placeholder="Ex: Minimalista, Vintage" value={formData.style} onChange={(e) => setFormData({...formData, style: e.target.value})} className="h-8 text-sm" />
+                    <Label className="text-[10px] uppercase font-bold opacity-70">Estilo / Design</Label>
+                    <Input placeholder="Ex: Boho Chic, Minimalista" value={formData.style} onChange={(e) => setFormData({...formData, style: e.target.value})} className="h-9 text-sm" />
                   </div>
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="w-full text-xs" 
+                    className="w-full text-xs font-headline hover:bg-primary hover:text-white transition-all" 
                     onClick={handleAiDescription}
                     disabled={isGenerating}
                   >
-                    {isGenerating ? 'Gerando...' : 'Gerar Descrição Elegante'}
+                    {isGenerating ? 'Refinando texto...' : 'Gerar Descrição de Luxo'}
                   </Button>
                 </div>
               </div>
-              <div>
-                <Label>Descrição</Label>
+              <div className="space-y-2">
+                <Label>Descrição Detalhada</Label>
                 <Textarea 
-                  className="h-40" 
+                  className="h-32 resize-none" 
+                  placeholder="A IA escreverá aqui, ou você pode digitar manualmente..."
                   value={formData.description} 
                   onChange={(e) => setFormData({...formData, description: e.target.value})} 
                 />
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsProductDialogOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSaveProduct} className="bg-primary">Salvar Alterações</Button>
+          <DialogFooter className="border-t pt-4">
+            <Button variant="ghost" onClick={() => setIsProductDialogOpen(false)} className="text-xs">Descartar</Button>
+            <Button onClick={handleSaveProduct} className="bg-primary px-8">Salvar Alterações</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
