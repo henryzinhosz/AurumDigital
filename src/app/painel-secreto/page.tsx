@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAurumStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,17 +31,24 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Tabs';
 import { Plus, Trash, Edit, Sparkles, LogOut, ChevronLeft } from 'lucide-react';
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { useAuth, useUser } from '@/firebase';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 export default function AdminPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [password, setPassword] = useState('');
-  const { products, categories, addProduct, updateProduct, deleteProduct, addCategory, deleteCategory, isInitialized } = useAurumStore();
+  const { user, loading: authLoading } = useUser();
+  const auth = useAuth();
   const { toast } = useToast();
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const { products, categories, addProduct, updateProduct, deleteProduct, addCategory, deleteCategory, isInitialized } = useAurumStore();
 
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
@@ -65,25 +72,30 @@ export default function AdminPage() {
     style: ''
   });
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'aurum2024') {
-      setIsLoggedIn(true);
-      localStorage.setItem('aurum_auth', 'true');
-    } else {
-      toast({ title: 'Acesso Negado', description: 'Senha incorreta.', variant: 'destructive' });
+    setIsLoggingIn(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({ title: 'Bem-vindo', description: 'Acesso autorizado.' });
+    } catch (error: any) {
+      toast({ 
+        title: 'Erro de Acesso', 
+        description: 'E-mail ou senha inválidos.', 
+        variant: 'destructive' 
+      });
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
-  useEffect(() => {
-    if (localStorage.getItem('aurum_auth') === 'true') {
-      setIsLoggedIn(true);
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({ title: 'Sessão encerrada' });
+    } catch (error) {
+      toast({ title: 'Erro ao sair', variant: 'destructive' });
     }
-  }, []);
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem('aurum_auth');
   };
 
   const handleOpenProductDialog = (product?: any) => {
@@ -150,9 +162,16 @@ export default function AdminPage() {
     }
   };
 
-  if (!isInitialized) return null;
+  if (authLoading || !isInitialized) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p className="font-headline tracking-widest text-primary uppercase">Aurum Admin</p>
+      </div>
+    );
+  }
 
-  if (!isLoggedIn) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md shadow-xl border-primary/20">
@@ -163,16 +182,35 @@ export default function AdminPage() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="pass">Senha de Acesso</Label>
+                <Label htmlFor="email">E-mail</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="admin@aurum.com.br"
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="rounded-none border-primary/20 focus:border-primary"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="pass">Senha</Label>
                 <Input 
                   id="pass" 
                   type="password" 
                   value={password} 
                   onChange={(e) => setPassword(e.target.value)}
                   className="rounded-none border-primary/20 focus:border-primary"
+                  required
                 />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-secondary">Entrar</Button>
+              <Button 
+                type="submit" 
+                className="w-full bg-primary hover:bg-secondary"
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn ? 'Entrando...' : 'Entrar'}
+              </Button>
             </form>
           </CardContent>
         </Card>
@@ -189,9 +227,12 @@ export default function AdminPage() {
           </Link>
           <h1 className="font-headline text-xl text-primary">Aurum Admin</h1>
         </div>
-        <Button variant="ghost" size="sm" onClick={handleLogout} className="text-destructive">
-          <LogOut className="w-4 h-4 mr-2" /> Sair
-        </Button>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground hidden sm:block">{user.email}</span>
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-destructive">
+            <LogOut className="w-4 h-4 mr-2" /> Sair
+          </Button>
+        </div>
       </header>
 
       <main className="container mx-auto p-6">
