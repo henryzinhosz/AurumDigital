@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Product, Category } from './types';
 import { 
   collection, 
@@ -14,7 +14,7 @@ import {
 } from 'firebase/firestore';
 import { useFirestore, useCollection } from '@/firebase';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 export function useAurumStore() {
   const db = useFirestore();
@@ -41,19 +41,21 @@ export function useAurumStore() {
         path: 'products',
         operation: 'create',
         requestResourceData: p
-      }));
+      } satisfies SecurityRuleContext));
     });
   };
 
   const updateProduct = (id: string, p: Partial<Product>) => {
     if (!db) return;
     const docRef = doc(db, 'products', id);
-    updateDoc(docRef, p).catch(async (err) => {
+    // Removemos o ID dos dados para não tentar sobrescrever o campo reservado do Firestore
+    const { id: _, ...dataToUpdate } = p as any;
+    updateDoc(docRef, dataToUpdate).catch(async (err) => {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
         path: docRef.path,
         operation: 'update',
-        requestResourceData: p
-      }));
+        requestResourceData: dataToUpdate
+      } satisfies SecurityRuleContext));
     });
   };
 
@@ -64,7 +66,7 @@ export function useAurumStore() {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
         path: docRef.path,
         operation: 'delete'
-      }));
+      } satisfies SecurityRuleContext));
     });
   };
 
@@ -75,7 +77,7 @@ export function useAurumStore() {
         path: 'categories',
         operation: 'create',
         requestResourceData: { name }
-      }));
+      } satisfies SecurityRuleContext));
     });
   };
 
@@ -86,7 +88,7 @@ export function useAurumStore() {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
         path: docRef.path,
         operation: 'delete'
-      }));
+      } satisfies SecurityRuleContext));
     });
   };
 

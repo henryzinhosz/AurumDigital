@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { firebaseConfig } from '@/firebase/config';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 export const metadata: Metadata = {
   title: 'Aurum Digital | Joias Finas e Delicadas',
@@ -24,6 +25,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased selection:bg-primary/20 selection:text-primary">
         <FirebaseClientProvider firebaseConfig={firebaseConfig}>
+          <FirebaseErrorListener />
           {children}
           <Toaster />
         </FirebaseClientProvider>
