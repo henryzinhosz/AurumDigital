@@ -80,9 +80,10 @@ export default function AdminPage() {
       await signInWithEmailAndPassword(auth, email, password);
       toast({ title: 'Acesso concedido', description: 'Bem-vindo ao painel administrativo.' });
     } catch (error: any) {
+      console.error("Erro de login:", error);
       toast({ 
         title: 'Erro de Autenticação', 
-        description: 'E-mail ou senha incorretos. Verifique no Console do Firebase.', 
+        description: error.message || 'Verifique suas credenciais e a configuração do Firebase.', 
         variant: 'destructive' 
       });
     } finally {
