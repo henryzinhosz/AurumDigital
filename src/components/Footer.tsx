@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Instagram, Mail, Phone } from 'lucide-react';
 
@@ -8,7 +7,9 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           <div className="flex flex-col items-center md:items-start">
-            <h3 className="font-headline text-2xl text-primary mb-4">Aurum Digital</h3>
+            <Link href="/painel-secreto" className="hover:opacity-80 transition-opacity">
+              <h3 className="font-headline text-2xl text-primary mb-4">Aurum Digital</h3>
+            </Link>
             <p className="text-muted-foreground text-sm max-w-xs text-center md:text-left leading-relaxed">
               Curadoria autêntica de bijuterias finas, criadas para destacar a sua essência mais delicada e natural.
             </p>
@@ -44,7 +45,6 @@ export function Footer() {
         <div className="border-t pt-8 text-center relative">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground opacity-60">
             &copy; {new Date().getFullYear()} Aurum Digital. Todos os direitos reservados
-            <Link href="/painel-secreto" className="inline-block w-1 h-1 ml-1 bg-transparent hover:bg-primary/10 rounded-full cursor-default" title="Acesso Restrito">.</Link>
           </p>
         </div>
       </div>
