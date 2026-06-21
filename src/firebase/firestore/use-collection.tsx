@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Query, onSnapshot, DocumentData, QuerySnapshot } from 'firebase/firestore';
+import { Query, onSnapshot, DocumentData, QuerySnapshot, CollectionReference } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
 
@@ -28,10 +28,14 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
         setLoading(false);
       },
       async (serverError) => {
+        // Tenta extrair o caminho da coleção para facilitar o debug
+        const path = (query as any).path || (query as any)._query?.path?.segments?.join('/') || 'unknown';
+        
         const permissionError = new FirestorePermissionError({
-          path: (query as any).path || 'unknown',
+          path: path,
           operation: 'list',
         });
+        
         errorEmitter.emit('permission-error', permissionError);
         setError(permissionError);
         setLoading(false);
