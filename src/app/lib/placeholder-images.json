@@ -1,0 +1,28 @@
+{
+  "placeholderImages": [
+    {
+      "id": "jewelry-1",
+      "description": "Colar Minimalista Dourado",
+      "imageUrl": "https://picsum.photos/seed/jewelry1/800/800",
+      "imageHint": "gold necklace"
+    },
+    {
+      "id": "jewelry-2",
+      "description": "Brincos de Pérola Elegantes",
+      "imageUrl": "https://picsum.photos/seed/jewelry2/800/800",
+      "imageHint": "pearl earrings"
+    },
+    {
+      "id": "jewelry-3",
+      "description": "Anel de Prata Delicado",
+      "imageUrl": "https://picsum.photos/seed/jewelry3/800/800",
+      "imageHint": "silver ring"
+    },
+    {
+      "id": "hero-1",
+      "description": "Coleção de Verão",
+      "imageUrl": "https://picsum.photos/seed/hero1/1200/600",
+      "imageHint": "jewelry collection"
+    }
+  ]
+}
