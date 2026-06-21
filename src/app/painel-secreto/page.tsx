@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Trash, Edit, Sparkles, LogOut, ChevronLeft } from 'lucide-react';
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
 import { useToast } from '@/hooks/use-toast';
