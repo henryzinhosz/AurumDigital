@@ -1,3 +1,4 @@
+
 "use client"
 
 import Image from 'next/image';
@@ -23,13 +24,19 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group animate-fade-in flex flex-col">
       <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted mb-4">
-        <Image
-          src={product.imageUrl}
-          alt={product.name}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          data-ai-hint="jewelry photo"
-        />
+        {product.imageUrl ? (
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            data-ai-hint="jewelry photo"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground/50 uppercase tracking-widest">
+            Sem Imagem
+          </div>
+        )}
         {product.isPromo && !product.hidePrice && (
           <div className="absolute top-3 left-3 bg-secondary text-white text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded">
             Oferta

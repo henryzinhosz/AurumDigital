@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useAurumStore } from '@/lib/store';
@@ -13,7 +14,6 @@ import {
 } from '@/components/ui/carousel';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
   const { products, categories, isInitialized } = useAurumStore();
@@ -42,14 +42,20 @@ export default function Home() {
               <CarouselContent>
                 {heroProducts.map((p) => (
                   <CarouselItem key={p.id}>
-                    <div className="relative h-[400px] md:h-[600px] w-full flex items-center overflow-hidden">
-                      <Image
-                        src={p.imageUrl}
-                        alt={p.name}
-                        fill
-                        className="object-cover"
-                        priority
-                      />
+                    <div className="relative h-[400px] md:h-[600px] w-full flex items-center overflow-hidden bg-muted">
+                      {p.imageUrl ? (
+                        <Image
+                          src={p.imageUrl}
+                          alt={p.name}
+                          fill
+                          className="object-cover"
+                          priority
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30">
+                          <span className="font-headline text-2xl uppercase tracking-widest">Aurum Digital</span>
+                        </div>
+                      )}
                       <div className="absolute inset-0 bg-black/20" />
                       <div className="container mx-auto px-4 relative z-10 text-white">
                         <div className="max-w-xl animate-fade-in">
