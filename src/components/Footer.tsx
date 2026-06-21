@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { Instagram, Mail, Phone } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -23,10 +23,6 @@ export function Footer() {
               <li className="flex items-center gap-2 justify-center">
                 <Mail className="w-4 h-4 text-primary" />
                 <span>contato@aurum.com.br</span>
-              </li>
-              <li className="flex items-center gap-2 justify-center">
-                <MapPin className="w-4 h-4 text-primary" />
-                <span>Showroom Online</span>
               </li>
             </ul>
           </div>
