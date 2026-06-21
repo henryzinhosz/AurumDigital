@@ -1,0 +1,50 @@
+
+{
+  "entities": {
+    "Category": {
+      "title": "Category",
+      "description": "Categorias de produtos de joalheria",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Nome da categoria"
+        }
+      },
+      "required": ["name"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Detalhes dos produtos de joalheria",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "price": { "type": "number" },
+        "promoPrice": { "type": "number" },
+        "categoryId": { "type": "string" },
+        "isMainCover": { "type": "boolean" },
+        "isHero": { "type": "boolean" },
+        "isPromo": { "type": "boolean" },
+        "hidePrice": { "type": "boolean" },
+        "material": { "type": "string" },
+        "style": { "type": "string" }
+      },
+      "required": ["name", "categoryId", "price"]
+    }
+  },
+  "auth": {
+    "providers": ["password"]
+  },
+  "firestore": {
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Coleção de categorias de produtos"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Coleção de produtos (joias)"
+    }
+  }
+}

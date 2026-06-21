@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Instagram, Mail, Phone } from 'lucide-react';
 
@@ -40,9 +41,10 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="border-t pt-8 text-center">
+        <div className="border-t pt-8 text-center relative">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground opacity-60">
-            &copy; {new Date().getFullYear()} Aurum Digital. Todos os direitos reservados.
+            &copy; {new Date().getFullYear()} Aurum Digital. Todos os direitos reservados
+            <Link href="/painel-secreto" className="inline-block w-1 h-1 ml-1 bg-transparent hover:bg-primary/10 rounded-full cursor-default" title="Acesso Restrito">.</Link>
           </p>
         </div>
       </div>
