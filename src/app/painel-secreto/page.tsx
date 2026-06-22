@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef } from 'react';
@@ -55,7 +56,6 @@ export default function AdminPage() {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [newCatName, setNewCatName] = useState('');
 
-  // Form State - Usamos strings para preços para permitir digitação fluida de vírgulas
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -77,7 +77,6 @@ export default function AdminPage() {
       await signInWithEmailAndPassword(auth, email, password);
       toast({ title: 'Acesso concedido', description: 'Bem-vindo ao painel administrativo.' });
     } catch (error: any) {
-      console.error("Erro de login:", error);
       toast({ 
         title: 'Erro de Autenticação', 
         description: error.message || 'Verifique suas credenciais.', 
@@ -138,7 +137,6 @@ export default function AdminPage() {
       return;
     }
 
-    // Convertemos os preços de volta para número antes de salvar
     const finalData = {
       ...formData,
       price: parseFloat(formData.price.replace(',', '.')) || 0,
@@ -296,8 +294,8 @@ export default function AdminPage() {
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
-                              {p.isHero && <span className="bg-blue-50 text-blue-600 text-[9px] px-2 py-0.5 rounded-full border border-blue-100 uppercase font-bold tracking-tighter">Topo</span>}
-                              {p.isMainCover && <span className="bg-green-50 text-green-600 text-[9px] px-2 py-0.5 rounded-full border border-green-100 uppercase font-bold tracking-tighter">Capa</span>}
+                              {p.isHero && <span className="bg-blue-50 text-blue-600 text-[9px] px-2 py-0.5 rounded-full border border-blue-100 uppercase font-bold tracking-tighter">Carrosel</span>}
+                              {p.isMainCover && <span className="bg-green-50 text-green-600 text-[9px] px-2 py-0.5 rounded-full border border-green-100 uppercase font-bold tracking-tighter">Home</span>}
                               {p.isPromo && <span className="bg-rose-50 text-rose-600 text-[9px] px-2 py-0.5 rounded-full border border-rose-100 uppercase font-bold tracking-tighter">Promo</span>}
                             </div>
                           </TableCell>
@@ -418,11 +416,17 @@ export default function AdminPage() {
               <div className="space-y-4 bg-white p-4 rounded-xl border shadow-sm">
                 <Label className="text-[10px] uppercase font-bold opacity-60">Configurações de Exibição</Label>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="hero" className="text-xs">Destaque no carrosel</Label>
+                  <div className="space-y-0.5">
+                    <Label htmlFor="hero" className="text-xs">Destaque no carrosel</Label>
+                    <p className="text-[10px] text-muted-foreground">Exibir em "Favoritos da Estação"</p>
+                  </div>
                   <Checkbox id="hero" checked={formData.isHero} onCheckedChange={(val) => setFormData({...formData, isHero: !!val})} />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="cover" className="text-xs">Exibir na Home (Favoritos)</Label>
+                  <div className="space-y-0.5">
+                    <Label htmlFor="cover" className="text-xs">Exibir na Home</Label>
+                    <p className="text-[10px] text-muted-foreground">Exibir na grade de categorias</p>
+                  </div>
                   <Checkbox id="cover" checked={formData.isMainCover} onCheckedChange={(val) => setFormData({...formData, isMainCover: !!val})} />
                 </div>
                 <div className="flex items-center justify-between">

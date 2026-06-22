@@ -27,57 +27,16 @@ export default function Home() {
     );
   }
 
-  const heroProducts = products.filter(p => p.isHero);
-  const mainCoverProducts = products.filter(p => p.isMainCover);
+  // Agora isHero controla o carrossel "Favoritos da Estação"
+  const carouselProducts = products.filter(p => p.isHero);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header categories={categories} />
 
-      <main className="flex-grow">
-        {/* Hero Carousel */}
-        {heroProducts.length > 0 && (
-          <section className="mb-20">
-            <Carousel className="w-full" opts={{ loop: true }}>
-              <CarouselContent>
-                {heroProducts.map((p) => (
-                  <CarouselItem key={p.id}>
-                    <div className="relative h-[400px] md:h-[650px] w-full flex items-center overflow-hidden bg-muted">
-                      {p.imageUrl && (
-                        <Image
-                          src={p.imageUrl}
-                          alt={p.name}
-                          fill
-                          className="object-cover"
-                          priority
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-black/30" />
-                      <div className="container relative z-10 text-white">
-                        <div className="max-w-2xl animate-fade-in">
-                          <span className="text-xs uppercase tracking-[0.4em] font-body mb-4 block">Destaque da Coleção</span>
-                          <h2 className="text-4xl md:text-7xl font-headline mb-8 leading-tight">{p.name}</h2>
-                          <Button className="rounded-none bg-white text-primary hover:bg-primary hover:text-white transition-all px-10 py-7 uppercase tracking-widest text-xs font-bold shadow-xl">
-                            Ver Detalhes
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <div className="container absolute inset-0 pointer-events-none flex items-center">
-                <div className="w-full flex justify-between pointer-events-auto">
-                  <CarouselPrevious className="relative left-0 md:flex bg-white/20 hover:bg-white/40 border-none text-white" />
-                  <CarouselNext className="relative right-0 md:flex bg-white/20 hover:bg-white/40 border-none text-white" />
-                </div>
-              </div>
-            </Carousel>
-          </section>
-        )}
-
-        {/* Main Cover Section - NOW A CAROUSEL */}
-        {mainCoverProducts.length > 0 && (
+      <main className="flex-grow pt-8">
+        {/* Favoritos da Estação - Carrossel Manual controlado por 'isHero' */}
+        {carouselProducts.length > 0 && (
           <section className="container mb-24 px-12 md:px-16">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-5xl font-headline text-primary mb-4">Favoritos da Estação</h2>
@@ -94,7 +53,7 @@ export default function Home() {
                 className="w-full"
               >
                 <CarouselContent className="-ml-4 md:-ml-8">
-                  {mainCoverProducts.map(p => (
+                  {carouselProducts.map(p => (
                     <CarouselItem key={p.id} className="pl-4 md:pl-8 basis-full sm:basis-1/2 lg:basis-1/4">
                       <ProductCard product={p} />
                     </CarouselItem>
@@ -107,9 +66,10 @@ export default function Home() {
           </section>
         )}
 
-        {/* Full Grid by Category */}
+        {/* Listagem por Categoria - Controlada por 'isMainCover' */}
         {categories.map(cat => {
-          const categoryProducts = products.filter(p => p.categoryId === cat.id);
+          // Filtra apenas produtos que pertencem à categoria E que tenham 'Exibir na Home' (isMainCover) marcado
+          const categoryProducts = products.filter(p => p.categoryId === cat.id && p.isMainCover);
           if (categoryProducts.length === 0) return null;
 
           return (
