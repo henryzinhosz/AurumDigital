@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/carousel';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { ChevronDown } from 'lucide-react';
 
 export default function Home() {
   const { products, categories, isInitialized } = useAurumStore();
@@ -27,21 +28,42 @@ export default function Home() {
     );
   }
 
-  // Agora isHero controla o carrossel "Favoritos da Estação"
+  // Filtra apenas produtos marcados como 'isHero' para o carrossel manual
   const carouselProducts = products.filter(p => p.isHero);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header categories={categories} />
 
-      <main className="flex-grow pt-8">
-        {/* Favoritos da Estação - Carrossel Manual controlado por 'isHero' */}
+      <main className="flex-grow">
+        {/* Banner Superior Compacto (Logo da Empresa) */}
+        <section className="relative w-full h-[45vh] min-h-[300px] flex flex-col items-center justify-center bg-accent/30 overflow-hidden border-b border-primary/5">
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[60%] rounded-full bg-primary blur-[100px]" />
+            <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[60%] rounded-full bg-secondary blur-[100px]" />
+          </div>
+          
+          <div className="z-10 text-center px-4 animate-fade-in">
+            <h1 className="text-5xl md:text-7xl font-headline tracking-[0.2em] text-primary uppercase mb-2">Th</h1>
+            <p className="text-[10px] md:text-xs uppercase tracking-[0.6em] font-body font-bold text-primary/70 mb-8">Acessórios</p>
+            <div className="w-12 h-[1px] bg-secondary mx-auto mb-8" />
+            <p className="font-headline italic text-lg text-muted-foreground/80 max-w-md mx-auto">
+              Curadoria de joias finas, autênticas e delicadas.
+            </p>
+          </div>
+
+          <div className="absolute bottom-8 animate-bounce opacity-40">
+            <ChevronDown className="w-6 h-6 text-primary" />
+          </div>
+        </section>
+
+        {/* Favoritos da Estação - Carrossel Manual posicionado para 'espiar' o banner */}
         {carouselProducts.length > 0 && (
-          <section className="container mb-24 px-12 md:px-16">
+          <section className="container py-20 px-12 md:px-16">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-5xl font-headline text-primary mb-4">Favoritos da Estação</h2>
               <div className="w-16 h-[1px] bg-secondary mx-auto mb-6" />
-              <p className="text-muted-foreground text-sm uppercase tracking-[0.3em] font-body">Peças essenciais para o seu brilho</p>
+              <p className="text-muted-foreground text-sm uppercase tracking-[0.3em] font-body font-medium">Peças essenciais para o seu brilho</p>
             </div>
             
             <div className="relative">
@@ -68,7 +90,6 @@ export default function Home() {
 
         {/* Listagem por Categoria - Controlada por 'isMainCover' */}
         {categories.map(cat => {
-          // Filtra apenas produtos que pertencem à categoria E que tenham 'Exibir na Home' (isMainCover) marcado
           const categoryProducts = products.filter(p => p.categoryId === cat.id && p.isMainCover);
           if (categoryProducts.length === 0) return null;
 
