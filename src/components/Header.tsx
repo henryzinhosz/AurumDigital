@@ -28,7 +28,7 @@ export function Header({ categories, searchTerm, onSearchChange }: HeaderProps) 
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
       <div className="container h-20 flex items-center justify-between">
         <Link href="/" className="flex flex-col items-center group">
-          <span className="text-2xl md:text-3xl font-headline tracking-[0.2em] text-primary uppercase transition-colors group-hover:text-secondary">Th</span>
+          <span className="text-4xl md:text-5xl font-script text-primary leading-none transition-colors group-hover:text-secondary">Th</span>
           <span className="text-[9px] uppercase tracking-[0.4em] -mt-1 font-body font-bold opacity-60">Acessórios</span>
         </Link>
 
