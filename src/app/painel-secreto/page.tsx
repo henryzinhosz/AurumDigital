@@ -80,7 +80,7 @@ export default function AdminPage() {
       console.error("Erro de login:", error);
       toast({ 
         title: 'Erro de Autenticação', 
-        description: 'Verifique suas credenciais.', 
+        description: error.message || 'Verifique suas credenciais.', 
         variant: 'destructive' 
       });
     } finally {
@@ -418,7 +418,7 @@ export default function AdminPage() {
               <div className="space-y-4 bg-white p-4 rounded-xl border shadow-sm">
                 <Label className="text-[10px] uppercase font-bold opacity-60">Configurações de Exibição</Label>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="hero" className="text-xs">Destaque no Banner Topo</Label>
+                  <Label htmlFor="hero" className="text-xs">Destaque no carrosel</Label>
                   <Checkbox id="hero" checked={formData.isHero} onCheckedChange={(val) => setFormData({...formData, isHero: !!val})} />
                 </div>
                 <div className="flex items-center justify-between">
