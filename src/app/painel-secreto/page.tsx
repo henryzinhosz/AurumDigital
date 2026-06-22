@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef } from 'react';
@@ -56,13 +55,13 @@ export default function AdminPage() {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [newCatName, setNewCatName] = useState('');
 
-  // Form State
+  // Form State - Usamos strings para preços para permitir digitação fluida de vírgulas
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     imageUrl: '',
-    price: 0,
-    promoPrice: 0,
+    price: '', 
+    promoPrice: '',
     categoryId: '',
     isMainCover: false,
     isHero: false,
@@ -81,7 +80,7 @@ export default function AdminPage() {
       console.error("Erro de login:", error);
       toast({ 
         title: 'Erro de Autenticação', 
-        description: error.code === 'auth/invalid-api-key' ? 'Configuração do Firebase inválida.' : 'Verifique suas credenciais.', 
+        description: 'Verifique suas credenciais.', 
         variant: 'destructive' 
       });
     } finally {
@@ -105,8 +104,8 @@ export default function AdminPage() {
         name: product.name || '',
         description: product.description || '',
         imageUrl: product.imageUrl || '',
-        price: product.price || 0,
-        promoPrice: product.promoPrice || 0,
+        price: product.price?.toString().replace('.', ',') || '',
+        promoPrice: product.promoPrice?.toString().replace('.', ',') || '',
         categoryId: product.categoryId || '',
         isMainCover: !!product.isMainCover,
         isHero: !!product.isHero,
@@ -117,9 +116,17 @@ export default function AdminPage() {
     } else {
       setEditingProduct(null);
       setFormData({
-        name: '', description: '', imageUrl: '', price: 0, promoPrice: 0,
-        categoryId: categories[0]?.id || '', isMainCover: false, isHero: false,
-        isPromo: false, hidePrice: false, material: ''
+        name: '', 
+        description: '', 
+        imageUrl: '', 
+        price: '', 
+        promoPrice: '',
+        categoryId: categories[0]?.id || '', 
+        isMainCover: false, 
+        isHero: false,
+        isPromo: false, 
+        hidePrice: false, 
+        material: ''
       });
     }
     setIsProductDialogOpen(true);
@@ -131,11 +138,18 @@ export default function AdminPage() {
       return;
     }
 
+    // Convertemos os preços de volta para número antes de salvar
+    const finalData = {
+      ...formData,
+      price: parseFloat(formData.price.replace(',', '.')) || 0,
+      promoPrice: parseFloat(formData.promoPrice.replace(',', '.')) || 0
+    };
+
     if (editingProduct) {
-      updateProduct(editingProduct.id, formData);
+      updateProduct(editingProduct.id, finalData);
       toast({ title: 'Atualizado', description: 'Produto salvo com sucesso.' });
     } else {
-      addProduct(formData);
+      addProduct(finalData);
       toast({ title: 'Criado', description: 'Novo produto adicionado ao catálogo.' });
     }
     setIsProductDialogOpen(false);
@@ -154,16 +168,6 @@ export default function AdminPage() {
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const formatPriceInput = (value: number) => {
-    if (value === 0) return '';
-    return value.toString().replace('.', ',');
-  };
-
-  const parsePriceInput = (value: string) => {
-    const cleaned = value.replace(',', '.');
-    return cleaned === '' ? 0 : parseFloat(cleaned);
   };
 
   if (authLoading || !isInitialized) {
@@ -454,8 +458,8 @@ export default function AdminPage() {
                   <Label>Preço Base (R$)</Label>
                   <Input 
                     placeholder="Ex: 45,90" 
-                    value={formatPriceInput(formData.price)} 
-                    onChange={(e) => setFormData({...formData, price: parsePriceInput(e.target.value)})} 
+                    value={formData.price} 
+                    onChange={(e) => setFormData({...formData, price: e.target.value})} 
                   />
                 </div>
                 <div className="space-y-2">
@@ -463,8 +467,8 @@ export default function AdminPage() {
                   <Input 
                     disabled={!formData.isPromo}
                     placeholder={formData.isPromo ? "Ex: 39,90" : "Ative 'Promoção'"} 
-                    value={formatPriceInput(formData.promoPrice)} 
-                    onChange={(e) => setFormData({...formData, promoPrice: parsePriceInput(e.target.value)})} 
+                    value={formData.promoPrice} 
+                    onChange={(e) => setFormData({...formData, promoPrice: e.target.value})} 
                     className={formData.isPromo ? "border-secondary/40 text-secondary" : ""}
                   />
                 </div>
