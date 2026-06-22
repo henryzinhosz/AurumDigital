@@ -10,19 +10,19 @@
     --card-foreground: 24 9% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 24 9% 15%;
-    --primary: 36 26% 49%; /* Sunlit Sand #9C835E */
+    --primary: 345 35% 70%; /* Soft Pink / Rosa Claro */
     --primary-foreground: 30 20% 98%;
-    --secondary: 7 26% 62%; /* Dusty Rosé #BA8B84 */
+    --secondary: 345 20% 55%; /* Dusty Rosé */
     --secondary-foreground: 30 20% 98%;
     --muted: 30 10% 90%;
     --muted-foreground: 24 9% 45%;
-    --accent: 7 26% 95%;
-    --accent-foreground: 7 26% 40%;
+    --accent: 345 35% 96%;
+    --accent-foreground: 345 35% 40%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 36 26% 90%;
-    --input: 36 26% 90%;
-    --ring: 36 26% 49%;
+    --border: 345 20% 90%;
+    --input: 345 20% 90%;
+    --ring: 345 35% 70%;
     --radius: 0.75rem;
   }
 }
@@ -45,4 +45,8 @@
 
 .font-body {
   font-family: 'PT Sans', sans-serif;
+}
+
+.font-script {
+  font-family: 'Pinyon Script', cursive;
 }

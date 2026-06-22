@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useAurumStore } from '@/lib/store';
@@ -12,8 +11,6 @@ import {
   CarouselNext, 
   CarouselPrevious 
 } from '@/components/ui/carousel';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 
 export default function Home() {
@@ -44,8 +41,8 @@ export default function Home() {
           </div>
           
           <div className="z-10 text-center px-4 animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-headline tracking-[0.2em] text-primary uppercase mb-2">Th</h1>
-            <p className="text-[10px] md:text-xs uppercase tracking-[0.6em] font-body font-bold text-primary/70 mb-8">Acessórios</p>
+            <h1 className="text-7xl md:text-9xl font-script text-primary mb-0 leading-none drop-shadow-sm">Th</h1>
+            <p className="text-[10px] md:text-xs uppercase tracking-[0.6em] font-body font-bold text-primary/70 mb-8 mt-2">Acessórios</p>
             <div className="w-12 h-[1px] bg-secondary mx-auto mb-8" />
             <p className="font-headline italic text-lg text-muted-foreground/80 max-w-md mx-auto">
               Curadoria de joias finas, autênticas e delicadas.
@@ -57,7 +54,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Favoritos da Estação - Carrossel Manual posicionado para 'espiar' o banner */}
+        {/* Favoritos da Estação - Carrossel Manual */}
         {carouselProducts.length > 0 && (
           <section className="container py-20 px-12 md:px-16">
             <div className="text-center mb-16">
@@ -88,7 +85,7 @@ export default function Home() {
           </section>
         )}
 
-        {/* Listagem por Categoria - Controlada por 'isMainCover' */}
+        {/* Listagem por Categoria */}
         {categories.map(cat => {
           const categoryProducts = products.filter(p => p.categoryId === cat.id && p.isMainCover);
           if (categoryProducts.length === 0) return null;
