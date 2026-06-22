@@ -39,7 +39,7 @@ export function Header({ categories, searchTerm, onSearchChange }: HeaderProps) 
               {categories.map((cat) => (
                 <Link 
                   key={cat.id} 
-                  href={`/#${cat.name.toLowerCase()}`}
+                  href={`/categoria/${cat.id}`}
                   className="text-[11px] uppercase tracking-[0.2em] font-body font-bold hover:text-primary transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all"
                 >
                   {cat.name}
@@ -121,7 +121,7 @@ export function Header({ categories, searchTerm, onSearchChange }: HeaderProps) 
                 {categories.map((cat) => (
                   <Link 
                     key={cat.id} 
-                    href={`/#${cat.name.toLowerCase()}`}
+                    href={`/categoria/${cat.id}`}
                     className="text-sm font-body uppercase tracking-[0.3em] font-bold hover:text-primary transition-colors"
                   >
                     {cat.name}

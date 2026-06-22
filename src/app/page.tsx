@@ -2,6 +2,7 @@
 "use client"
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useAurumStore } from '@/lib/store';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -13,7 +14,7 @@ import {
   CarouselNext, 
   CarouselPrevious 
 } from '@/components/ui/carousel';
-import { ChevronDown, SearchX } from 'lucide-react';
+import { ChevronDown, SearchX, ArrowRight } from 'lucide-react';
 
 export default function Home() {
   const { products, categories, isInitialized } = useAurumStore();
@@ -28,7 +29,6 @@ export default function Home() {
     );
   }
 
-  // Filtragem global baseada na busca
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,8 +36,6 @@ export default function Home() {
   );
 
   const isSearching = searchTerm.length > 0;
-
-  // Filtra apenas produtos marcados como 'isHero' para o carrossel manual
   const carouselProducts = filteredProducts.filter(p => p.isHero);
 
   return (
@@ -51,7 +49,6 @@ export default function Home() {
       <main className="flex-grow">
         {!isSearching ? (
           <>
-            {/* Banner Superior Compacto */}
             <section className="relative w-full h-[45vh] min-h-[300px] flex flex-col items-center justify-center bg-accent/30 overflow-hidden border-b border-primary/5">
               <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[60%] rounded-full bg-primary blur-[100px]" />
@@ -72,7 +69,6 @@ export default function Home() {
               </div>
             </section>
 
-            {/* Favoritos da Estação */}
             {carouselProducts.length > 0 && (
               <section className="container py-20 px-12 md:px-16">
                 <div className="text-center mb-16">
@@ -103,19 +99,24 @@ export default function Home() {
               </section>
             )}
 
-            {/* Listagem por Categoria */}
             {categories.map(cat => {
               const categoryProducts = filteredProducts.filter(p => p.categoryId === cat.id && p.isMainCover);
               if (categoryProducts.length === 0) return null;
 
               return (
-                <section key={cat.id} id={cat.name.toLowerCase()} className="container mb-24">
+                <section key={cat.id} className="container mb-24">
                   <div className="flex items-end justify-between mb-10 border-b border-primary/10 pb-6">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-headline text-primary">{cat.name}</h2>
                       <div className="w-8 h-[1px] bg-secondary mt-2" />
                     </div>
-                    <span className="text-[10px] uppercase tracking-[0.4em] opacity-40 font-body font-bold">Coleção Completa</span>
+                    <Link 
+                      href={`/categoria/${cat.id}`} 
+                      className="group flex items-center gap-2 text-[10px] uppercase tracking-[0.4em] text-primary/60 hover:text-primary font-body font-bold transition-all"
+                    >
+                      Coleção Completa
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                   </div>
                   
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-16">
@@ -128,7 +129,6 @@ export default function Home() {
             })}
           </>
         ) : (
-          /* Tela de Resultados da Busca */
           <section className="container py-20 min-h-[60vh]">
             <div className="flex flex-col items-center justify-center mb-16 text-center">
               <h2 className="text-3xl font-headline text-primary mb-2">Resultados para &quot;{searchTerm}&quot;</h2>
