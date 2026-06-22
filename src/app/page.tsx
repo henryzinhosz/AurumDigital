@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useAurumStore } from '@/lib/store';
@@ -34,10 +35,10 @@ export default function Home() {
       <Header categories={categories} />
 
       <main className="flex-grow">
-        {/* Hero Carousel - Full width but contained content */}
+        {/* Hero Carousel */}
         {heroProducts.length > 0 && (
           <section className="mb-20">
-            <Carousel className="w-full">
+            <Carousel className="w-full" opts={{ loop: true }}>
               <CarouselContent>
                 {heroProducts.map((p) => (
                   <CarouselItem key={p.id}>
@@ -75,19 +76,33 @@ export default function Home() {
           </section>
         )}
 
-        {/* Main Cover Section */}
+        {/* Main Cover Section - NOW A CAROUSEL */}
         {mainCoverProducts.length > 0 && (
-          <section className="container mb-24">
+          <section className="container mb-24 px-12 md:px-16">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-5xl font-headline text-primary mb-4">Favoritos da Estação</h2>
               <div className="w-16 h-[1px] bg-secondary mx-auto mb-6" />
               <p className="text-muted-foreground text-sm uppercase tracking-[0.3em] font-body">Peças essenciais para o seu brilho</p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-              {mainCoverProducts.map(p => (
-                <ProductCard key={p.id} product={p} />
-              ))}
+            <div className="relative">
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="-ml-4 md:-ml-8">
+                  {mainCoverProducts.map(p => (
+                    <CarouselItem key={p.id} className="pl-4 md:pl-8 basis-full sm:basis-1/2 lg:basis-1/4">
+                      <ProductCard product={p} />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="-left-12 lg:-left-16 border-primary/20 text-primary hover:bg-primary hover:text-white" />
+                <CarouselNext className="-right-12 lg:-right-16 border-primary/20 text-primary hover:bg-primary hover:text-white" />
+              </Carousel>
             </div>
           </section>
         )}
