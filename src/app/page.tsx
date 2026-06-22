@@ -34,14 +34,14 @@ export default function Home() {
       <Header categories={categories} />
 
       <main className="flex-grow">
-        {/* Hero Carousel */}
+        {/* Hero Carousel - Full width but contained content */}
         {heroProducts.length > 0 && (
           <section className="mb-20">
             <Carousel className="w-full">
               <CarouselContent>
                 {heroProducts.map((p) => (
                   <CarouselItem key={p.id}>
-                    <div className="relative h-[400px] md:h-[600px] w-full flex items-center overflow-hidden bg-muted">
+                    <div className="relative h-[400px] md:h-[650px] w-full flex items-center overflow-hidden bg-muted">
                       {p.imageUrl && (
                         <Image
                           src={p.imageUrl}
@@ -51,12 +51,12 @@ export default function Home() {
                           priority
                         />
                       )}
-                      <div className="absolute inset-0 bg-black/20" />
-                      <div className="container mx-auto px-4 relative z-10 text-white">
-                        <div className="max-w-xl animate-fade-in">
+                      <div className="absolute inset-0 bg-black/30" />
+                      <div className="container relative z-10 text-white">
+                        <div className="max-w-2xl animate-fade-in">
                           <span className="text-xs uppercase tracking-[0.4em] font-body mb-4 block">Destaque da Coleção</span>
-                          <h2 className="text-4xl md:text-6xl font-headline mb-6">{p.name}</h2>
-                          <Button className="rounded-none bg-white text-primary hover:bg-primary hover:text-white transition-all px-8 py-6 uppercase tracking-widest text-xs">
+                          <h2 className="text-4xl md:text-7xl font-headline mb-8 leading-tight">{p.name}</h2>
+                          <Button className="rounded-none bg-white text-primary hover:bg-primary hover:text-white transition-all px-10 py-7 uppercase tracking-widest text-xs font-bold shadow-xl">
                             Ver Detalhes
                           </Button>
                         </div>
@@ -65,22 +65,26 @@ export default function Home() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-4 hidden md:flex" />
-              <CarouselNext className="right-4 hidden md:flex" />
+              <div className="container absolute inset-0 pointer-events-none flex items-center">
+                <div className="w-full flex justify-between pointer-events-auto">
+                  <CarouselPrevious className="relative left-0 md:flex bg-white/20 hover:bg-white/40 border-none text-white" />
+                  <CarouselNext className="relative right-0 md:flex bg-white/20 hover:bg-white/40 border-none text-white" />
+                </div>
+              </div>
             </Carousel>
           </section>
         )}
 
         {/* Main Cover Section */}
         {mainCoverProducts.length > 0 && (
-          <section className="container mx-auto px-4 mb-24">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-headline text-primary mb-2">Favoritos da Estação</h2>
-              <div className="w-12 h-[1px] bg-secondary mx-auto mb-4" />
-              <p className="text-muted-foreground text-sm uppercase tracking-widest font-body">Peças essenciais para o seu brilho</p>
+          <section className="container mb-24">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-5xl font-headline text-primary mb-4">Favoritos da Estação</h2>
+              <div className="w-16 h-[1px] bg-secondary mx-auto mb-6" />
+              <p className="text-muted-foreground text-sm uppercase tracking-[0.3em] font-body">Peças essenciais para o seu brilho</p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
               {mainCoverProducts.map(p => (
                 <ProductCard key={p.id} product={p} />
               ))}
@@ -94,13 +98,16 @@ export default function Home() {
           if (categoryProducts.length === 0) return null;
 
           return (
-            <section key={cat.id} id={cat.name.toLowerCase()} className="container mx-auto px-4 mb-24">
-              <div className="flex items-end justify-between mb-8 border-b pb-4">
-                <h2 className="text-2xl font-headline text-primary">{cat.name}</h2>
-                <span className="text-[10px] uppercase tracking-widest opacity-50 font-body">Explorar</span>
+            <section key={cat.id} id={cat.name.toLowerCase()} className="container mb-24">
+              <div className="flex items-end justify-between mb-10 border-b border-primary/10 pb-6">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-headline text-primary">{cat.name}</h2>
+                  <div className="w-8 h-[1px] bg-secondary mt-2" />
+                </div>
+                <span className="text-[10px] uppercase tracking-[0.4em] opacity-40 font-body font-bold">Coleção Completa</span>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-12">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-16">
                 {categoryProducts.map(p => (
                   <ProductCard key={p.id} product={p} />
                 ))}
