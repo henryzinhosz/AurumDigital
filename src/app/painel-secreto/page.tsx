@@ -1,6 +1,7 @@
+
 "use client"
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAurumStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,17 +33,19 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash, Edit, Sparkles, LogOut, ChevronLeft } from 'lucide-react';
+import { Plus, Trash, Edit, Sparkles, LogOut, ChevronLeft, ImagePlus, X } from 'lucide-react';
 import { generateProductDescription } from '@/ai/flows/generate-product-description';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useAuth, useUser } from '@/firebase';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import Image from 'next/image';
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useUser();
   const auth = useAuth();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -82,7 +85,7 @@ export default function AdminPage() {
       console.error("Erro de login:", error);
       toast({ 
         title: 'Erro de Autenticação', 
-        description: error.code === 'auth/invalid-api-key' ? 'Configuração do Firebase inválida. Verifique o arquivo config.ts.' : error.message || 'Verifique suas credenciais.', 
+        description: error.code === 'auth/invalid-api-key' ? 'Configuração do Firebase inválida.' : error.message || 'Verifique suas credenciais.', 
         variant: 'destructive' 
       });
     } finally {
@@ -143,6 +146,21 @@ export default function AdminPage() {
     setIsProductDialogOpen(false);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 1024 * 1024) { // 1MB limit for base64 in firestore
+        toast({ title: 'Arquivo muito grande', description: 'Tente uma imagem menor que 1MB.', variant: 'destructive' });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, imageUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAiDescription = async () => {
     if (!formData.material || !formData.style) {
       toast({ title: 'Faltam detalhes', description: 'Material e Estilo ajudam a IA a escrever melhor.', variant: 'destructive' });
@@ -161,6 +179,17 @@ export default function AdminPage() {
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  // Helper to format price for input
+  const formatPriceInput = (value: number) => {
+    if (value === 0) return '';
+    return value.toString().replace('.', ',');
+  };
+
+  const parsePriceInput = (value: string) => {
+    const cleaned = value.replace(',', '.');
+    return cleaned === '' ? 0 : parseFloat(cleaned);
   };
 
   if (authLoading || !isInitialized) {
@@ -362,43 +391,55 @@ export default function AdminPage() {
 
       {/* Product Form Dialog */}
       <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-headline text-2xl">{editingProduct ? 'Editar Peça' : 'Nova Peça no Acervo'}</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Nome do Produto*</Label>
-                <Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Ex: Colar Infinito" />
-              </div>
-              <div className="space-y-2">
-                <Label>Categoria*</Label>
-                <Select value={formData.categoryId} onValueChange={(val) => setFormData({...formData, categoryId: val})}>
-                  <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
-                  <SelectContent>
-                    {categories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>URL da Imagem</Label>
-                <Input value={formData.imageUrl} onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} placeholder="https://..." />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Preço Base (R$)</Label>
-                  <Input type="number" value={formData.price} onChange={(e) => setFormData({...formData, price: Number(e.target.value)})} />
-                </div>
-                {formData.isPromo && (
-                  <div className="space-y-2 text-secondary">
-                    <Label>Preço Oferta (R$)</Label>
-                    <Input type="number" value={formData.promoPrice} onChange={(e) => setFormData({...formData, promoPrice: Number(e.target.value)})} className="border-secondary/40" />
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 py-6">
+            {/* Left Column: Image and Details */}
+            <div className="md:col-span-5 space-y-6">
+              <div 
+                className="relative aspect-square rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 flex flex-col items-center justify-center overflow-hidden group cursor-pointer hover:border-primary/40 transition-all"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {formData.imageUrl ? (
+                  <>
+                    <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <p className="text-white text-xs font-bold uppercase tracking-widest">Trocar Imagem</p>
+                    </div>
+                    <Button 
+                      variant="destructive" 
+                      size="icon" 
+                      className="absolute top-2 right-2 h-7 w-7 rounded-full opacity-0 group-hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFormData({...formData, imageUrl: ''});
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center p-6">
+                    <div className="bg-primary/10 p-4 rounded-full inline-block mb-3">
+                      <ImagePlus className="w-8 h-8 text-primary" />
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-primary">Carregar Foto</p>
+                    <p className="text-[10px] text-muted-foreground mt-2 px-4 italic">Escolha uma foto da sua galeria (máx. 1MB)</p>
                   </div>
                 )}
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={handleFileChange} 
+                />
               </div>
-              <div className="space-y-3 pt-4 border-t">
-                <Label className="text-[10px] uppercase opacity-60">Visibilidade e Destaques</Label>
+
+              <div className="space-y-4 bg-white p-4 rounded-xl border shadow-sm">
+                <Label className="text-[10px] uppercase font-bold opacity-60">Configurações de Exibição</Label>
                 <div className="flex items-center justify-between">
                   <Label htmlFor="hero" className="text-xs">Destaque no Banner Topo</Label>
                   <Checkbox id="hero" checked={formData.isHero} onCheckedChange={(val) => setFormData({...formData, isHero: !!val})} />
@@ -418,38 +459,72 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="p-4 bg-primary/5 rounded-xl border border-primary/10 shadow-inner">
-                <div className="flex items-center justify-between mb-4">
-                  <Label className="text-primary font-bold flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" /> Escrita Criativa IA
-                  </Label>
+            {/* Right Column: Text Information */}
+            <div className="md:col-span-7 space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Nome da Peça*</Label>
+                  <Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Ex: Brinco Pérola" />
                 </div>
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-[10px] uppercase font-bold opacity-70">Material da Peça</Label>
-                    <Input placeholder="Ex: Banhado a Ouro 18k, Cristais" value={formData.material} onChange={(e) => setFormData({...formData, material: e.target.value})} className="h-9 text-sm" />
-                  </div>
-                  <div>
-                    <Label className="text-[10px] uppercase font-bold opacity-70">Estilo / Design</Label>
-                    <Input placeholder="Ex: Boho Chic, Minimalista" value={formData.style} onChange={(e) => setFormData({...formData, style: e.target.value})} className="h-9 text-sm" />
-                  </div>
+                <div className="space-y-2">
+                  <Label>Categoria*</Label>
+                  <Select value={formData.categoryId} onValueChange={(val) => setFormData({...formData, categoryId: val})}>
+                    <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                    <SelectContent>
+                      {categories.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Preço Base (R$)</Label>
+                  <Input 
+                    placeholder="Ex: 45,90" 
+                    value={formatPriceInput(formData.price)} 
+                    onChange={(e) => setFormData({...formData, price: parsePriceInput(e.target.value)})} 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Preço Oferta (R$)</Label>
+                  <Input 
+                    disabled={!formData.isPromo}
+                    placeholder={formData.isPromo ? "Ex: 39,90" : "Ative 'Promoção'"} 
+                    value={formatPriceInput(formData.promoPrice)} 
+                    onChange={(e) => setFormData({...formData, promoPrice: parsePriceInput(e.target.value)})} 
+                    className={formData.isPromo ? "border-secondary/40 text-secondary" : ""}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Material</Label>
+                  <Input placeholder="Ex: Banhado a Ouro 18k" value={formData.material} onChange={(e) => setFormData({...formData, material: e.target.value})} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Estilo / Design</Label>
+                  <Input placeholder="Ex: Minimalista" value={formData.style} onChange={(e) => setFormData({...formData, style: e.target.value})} />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between mb-1">
+                  <Label>Descrição Detalhada</Label>
                   <Button 
-                    variant="outline" 
+                    variant="ghost" 
                     size="sm" 
-                    className="w-full text-xs font-headline hover:bg-primary hover:text-white transition-all" 
+                    className="h-7 text-[10px] uppercase font-bold text-primary gap-1"
                     onClick={handleAiDescription}
                     disabled={isGenerating}
                   >
-                    {isGenerating ? 'Refinando texto...' : 'Gerar Descrição de Luxo'}
+                    <Sparkles className="w-3 h-3" /> {isGenerating ? 'Escrevendo...' : 'Gerar com IA'}
                   </Button>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Descrição Detalhada</Label>
                 <Textarea 
-                  className="h-32 resize-none" 
-                  placeholder="A IA escreverá aqui, ou você pode digitar manualmente..."
+                  className="h-32 resize-none leading-relaxed" 
+                  placeholder="Conte a história desta peça..."
                   value={formData.description} 
                   onChange={(e) => setFormData({...formData, description: e.target.value})} 
                 />
@@ -457,8 +532,8 @@ export default function AdminPage() {
             </div>
           </div>
           <DialogFooter className="border-t pt-4">
-            <Button variant="ghost" onClick={() => setIsProductDialogOpen(false)} className="text-xs">Descartar</Button>
-            <Button onClick={handleSaveProduct} className="bg-primary px-8">Salvar Alterações</Button>
+            <Button variant="ghost" onClick={() => setIsProductDialogOpen(false)}>Descartar</Button>
+            <Button onClick={handleSaveProduct} className="bg-primary px-8">Salvar no Acervo</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
