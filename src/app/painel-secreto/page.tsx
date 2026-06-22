@@ -33,13 +33,11 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Trash, Edit, Sparkles, LogOut, ChevronLeft, ImagePlus, X } from 'lucide-react';
-import { generateProductDescription } from '@/ai/flows/generate-product-description';
+import { Plus, Trash, Edit, LogOut, ChevronLeft, ImagePlus, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useAuth, useUser } from '@/firebase';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import Image from 'next/image';
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useUser();
@@ -57,7 +55,6 @@ export default function AdminPage() {
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [newCatName, setNewCatName] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -71,8 +68,7 @@ export default function AdminPage() {
     isHero: false,
     isPromo: false,
     hidePrice: false,
-    material: '',
-    style: ''
+    material: ''
   });
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -85,7 +81,7 @@ export default function AdminPage() {
       console.error("Erro de login:", error);
       toast({ 
         title: 'Erro de Autenticação', 
-        description: error.code === 'auth/invalid-api-key' ? 'Configuração do Firebase inválida.' : error.message || 'Verifique suas credenciais.', 
+        description: error.code === 'auth/invalid-api-key' ? 'Configuração do Firebase inválida.' : 'Verifique suas credenciais.', 
         variant: 'destructive' 
       });
     } finally {
@@ -116,15 +112,14 @@ export default function AdminPage() {
         isHero: !!product.isHero,
         isPromo: !!product.isPromo,
         hidePrice: !!product.hidePrice,
-        material: product.material || '',
-        style: product.style || ''
+        material: product.material || ''
       });
     } else {
       setEditingProduct(null);
       setFormData({
         name: '', description: '', imageUrl: '', price: 0, promoPrice: 0,
         categoryId: categories[0]?.id || '', isMainCover: false, isHero: false,
-        isPromo: false, hidePrice: false, material: '', style: ''
+        isPromo: false, hidePrice: false, material: ''
       });
     }
     setIsProductDialogOpen(true);
@@ -149,7 +144,7 @@ export default function AdminPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 1024 * 1024) { // 1MB limit for base64 in firestore
+      if (file.size > 1024 * 1024) { 
         toast({ title: 'Arquivo muito grande', description: 'Tente uma imagem menor que 1MB.', variant: 'destructive' });
         return;
       }
@@ -161,27 +156,6 @@ export default function AdminPage() {
     }
   };
 
-  const handleAiDescription = async () => {
-    if (!formData.material || !formData.style) {
-      toast({ title: 'Faltam detalhes', description: 'Material e Estilo ajudam a IA a escrever melhor.', variant: 'destructive' });
-      return;
-    }
-    setIsGenerating(true);
-    try {
-      const res = await generateProductDescription({
-        material: formData.material,
-        style: formData.style
-      });
-      setFormData({ ...formData, description: res.description });
-      toast({ title: 'IA Finalizada', description: 'Descrição elegante gerada.' });
-    } catch (e) {
-      toast({ title: 'Erro na IA', description: 'Não foi possível conectar ao serviço de geração.', variant: 'destructive' });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  // Helper to format price for input
   const formatPriceInput = (value: number) => {
     if (value === 0) return '';
     return value.toString().replace('.', ',');
@@ -396,7 +370,6 @@ export default function AdminPage() {
             <DialogTitle className="font-headline text-2xl">{editingProduct ? 'Editar Peça' : 'Nova Peça no Acervo'}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 py-6">
-            {/* Left Column: Image and Details */}
             <div className="md:col-span-5 space-y-6">
               <div 
                 className="relative aspect-square rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 flex flex-col items-center justify-center overflow-hidden group cursor-pointer hover:border-primary/40 transition-all"
@@ -459,7 +432,6 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Right Column: Text Information */}
             <div className="md:col-span-7 space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -498,30 +470,13 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Material</Label>
-                  <Input placeholder="Ex: Banhado a Ouro 18k" value={formData.material} onChange={(e) => setFormData({...formData, material: e.target.value})} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Estilo / Design</Label>
-                  <Input placeholder="Ex: Minimalista" value={formData.style} onChange={(e) => setFormData({...formData, style: e.target.value})} />
-                </div>
+              <div className="space-y-2">
+                <Label>Material</Label>
+                <Input placeholder="Ex: Banhado a Ouro 18k" value={formData.material} onChange={(e) => setFormData({...formData, material: e.target.value})} />
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between mb-1">
-                  <Label>Descrição Detalhada</Label>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-7 text-[10px] uppercase font-bold text-primary gap-1"
-                    onClick={handleAiDescription}
-                    disabled={isGenerating}
-                  >
-                    <Sparkles className="w-3 h-3" /> {isGenerating ? 'Escrevendo...' : 'Gerar com IA'}
-                  </Button>
-                </div>
+                <Label>Descrição Detalhada</Label>
                 <Textarea 
                   className="h-32 resize-none leading-relaxed" 
                   placeholder="Conte a história desta peça..."
