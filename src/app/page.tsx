@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useAurumStore } from '@/lib/store';
@@ -22,7 +21,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <p className="font-headline tracking-widest text-primary uppercase">Aurum</p>
+        <p className="font-headline tracking-widest text-primary uppercase">Th Acessórios</p>
       </div>
     );
   }
@@ -43,7 +42,7 @@ export default function Home() {
                 {heroProducts.map((p) => (
                   <CarouselItem key={p.id}>
                     <div className="relative h-[400px] md:h-[600px] w-full flex items-center overflow-hidden bg-muted">
-                      {p.imageUrl ? (
+                      {p.imageUrl && (
                         <Image
                           src={p.imageUrl}
                           alt={p.name}
@@ -51,10 +50,6 @@ export default function Home() {
                           className="object-cover"
                           priority
                         />
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30">
-                          <span className="font-headline text-2xl uppercase tracking-widest">Aurum Digital</span>
-                        </div>
                       )}
                       <div className="absolute inset-0 bg-black/20" />
                       <div className="container mx-auto px-4 relative z-10 text-white">

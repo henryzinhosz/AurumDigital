@@ -21,8 +21,8 @@ export function Header({ categories }: HeaderProps) {
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         <Link href="/" className="flex flex-col items-center group">
-          <span className="text-2xl font-headline tracking-widest text-primary uppercase transition-colors group-hover:text-secondary">Aurum</span>
-          <span className="text-[10px] uppercase tracking-[0.3em] -mt-1 font-body font-bold opacity-60">Digital</span>
+          <span className="text-2xl font-headline tracking-widest text-primary uppercase transition-colors group-hover:text-secondary">Th</span>
+          <span className="text-[10px] uppercase tracking-[0.3em] -mt-1 font-body font-bold opacity-60">Acessórios</span>
         </Link>
 
         {/* Desktop Navigation */}

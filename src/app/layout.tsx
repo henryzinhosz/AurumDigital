@@ -1,4 +1,3 @@
-
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -7,7 +6,7 @@ import { firebaseConfig } from '@/firebase/config';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 export const metadata: Metadata = {
-  title: 'Aurum Digital | Joias Finas e Delicadas',
+  title: 'Th Acessórios | Joias Finas e Delicadas',
   description: 'Catálogo exclusivo de bijuterias finas, autênticas e delicadas.',
 };
 

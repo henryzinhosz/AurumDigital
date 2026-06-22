@@ -8,7 +8,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           <div className="flex flex-col items-center md:items-start">
             <Link href="/painel-secreto" className="hover:opacity-80 transition-opacity">
-              <h3 className="font-headline text-2xl text-primary mb-4">Aurum Digital</h3>
+              <h3 className="font-headline text-2xl text-primary mb-4">Th Acessórios</h3>
             </Link>
             <p className="text-muted-foreground text-sm max-w-xs text-center md:text-left leading-relaxed">
               Curadoria autêntica de bijuterias finas, criadas para destacar a sua essência mais delicada e natural.
@@ -24,7 +24,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2 justify-center">
                 <Mail className="w-4 h-4 text-primary" />
-                <span>contato@aurum.com.br</span>
+                <span>contato@thacessorios.com.br</span>
               </li>
             </ul>
           </div>
@@ -44,7 +44,7 @@ export function Footer() {
         
         <div className="border-t pt-8 text-center relative">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground opacity-60">
-            &copy; {new Date().getFullYear()} Aurum Digital. Todos os direitos reservados
+            &copy; {new Date().getFullYear()} Th Acessórios. Todos os direitos reservados<Link href="/painel-secreto" className="opacity-0 cursor-default">.</Link>
           </p>
         </div>
       </div>

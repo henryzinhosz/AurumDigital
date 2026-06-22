@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from 'react';
@@ -83,7 +82,7 @@ export default function AdminPage() {
       console.error("Erro de login:", error);
       toast({ 
         title: 'Erro de Autenticação', 
-        description: error.message || 'Verifique suas credenciais e a configuração do Firebase.', 
+        description: error.code === 'auth/invalid-api-key' ? 'Configuração do Firebase inválida. Verifique o arquivo config.ts.' : error.message || 'Verifique suas credenciais.', 
         variant: 'destructive' 
       });
     } finally {
@@ -179,7 +178,7 @@ export default function AdminPage() {
         <Card className="w-full max-w-md shadow-xl border-primary/20">
           <CardHeader className="text-center">
             <CardTitle className="font-headline text-3xl text-primary">Login Administrativo</CardTitle>
-            <p className="text-xs uppercase tracking-widest opacity-60">Aurum Digital Studio</p>
+            <p className="text-xs uppercase tracking-widest opacity-60">Th Acessórios Studio</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
@@ -227,7 +226,7 @@ export default function AdminPage() {
           <Link href="/" className="text-primary hover:text-secondary transition-colors">
             <ChevronLeft className="w-5 h-5" />
           </Link>
-          <h1 className="font-headline text-xl text-primary">Gestão Aurum</h1>
+          <h1 className="font-headline text-xl text-primary">Gestão Th Acessórios</h1>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-xs text-muted-foreground hidden sm:block">{user.email}</span>
