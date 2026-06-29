@@ -20,7 +20,7 @@ export function Footer() {
             <ul className="space-y-5 text-sm text-center font-body">
               <li className="flex items-center gap-3 justify-center group cursor-pointer">
                 <Phone className="w-4 h-4 text-secondary/60 transition-transform group-hover:scale-110" />
-                <span className="hover:text-primary transition-colors">(2) 99661-9548</span>
+                <span className="hover:text-primary transition-colors">(21) 99661-9548</span>
               </li>
               <li className="flex items-center gap-3 justify-center group cursor-pointer">
                 <Mail className="w-4 h-4 text-secondary/60 transition-transform group-hover:scale-110" />
