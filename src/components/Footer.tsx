@@ -29,18 +29,29 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="flex flex-col items-center md:items-end">
-            <h4 className="font-body font-bold text-xs uppercase tracking-[0.3em] mb-8 text-secondary/90">Siga-nos</h4>
-            <div className="flex gap-6">
-              <Link href="#" className="p-4 bg-secondary/10 rounded-full text-secondary hover:bg-secondary/20 transition-all shadow-sm border border-secondary/10">
-                <Instagram className="w-5 h-5" />
-              </Link>
-              <Link href="#" className="p-4 bg-secondary/10 rounded-full text-secondary hover:bg-secondary/20 transition-all shadow-sm border border-secondary/10">
-                <Mail className="w-5 h-5" />
-              </Link>
-            </div>
-          </div>
-        </div>
+<div className="flex flex-col items-center md:items-end">
+  <h4 className="font-body font-bold text-xs uppercase tracking-[0.3em] mb-8 text-secondary/90">
+    Siga-nos
+  </h4>
+
+  <div className="flex gap-6">
+    <Link
+      href="https://www.instagram.com/useth.acessorios?igsh=MWxxbXo3ODhqaXZxcw=="
+      target="_blank"
+      rel="noopener noreferrer"
+      className="p-4 bg-secondary/10 rounded-full text-secondary hover:bg-secondary/20 transition-all shadow-sm border border-secondary/10"
+    >
+      <Instagram className="w-5 h-5" />
+    </Link>
+
+    <Link
+      href="#"
+      className="p-4 bg-secondary/10 rounded-full text-secondary hover:bg-secondary/20 transition-all shadow-sm border border-secondary/10"
+    >
+      <Mail className="w-5 h-5" />
+    </Link>
+  </div>
+</div>
         
         <div className="border-t border-secondary/10 pt-10 text-center relative">
           <p className="text-[10px] uppercase tracking-[0.5em] text-secondary/50 font-bold">
